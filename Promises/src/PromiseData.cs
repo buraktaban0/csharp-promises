@@ -7,6 +7,7 @@ namespace Promises
 		public PromiseResultDelegate ResultCallback;
 		public PromiseExceptionDelegate ExceptionCallback;
 		public Action FinallyCallback;
+		public PromiseState State;
 		public object Result;
 		public object Fallback;
 
@@ -17,6 +18,7 @@ namespace Promises
 			                                   FinallyCallback = delegate { },
 			                                   Result = null,
 			                                   Fallback = null,
+			                                   State = PromiseState.InProgress,
 		                                   };
 	}
 }

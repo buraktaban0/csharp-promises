@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using Promises.Exceptions;
 
 namespace Promises
 {
@@ -49,6 +50,23 @@ namespace Promises
 
 			result = data.Result;
 			return result != null;
+		}
+
+		public static PromiseState GetState<TPromise>(TPromise promise) where TPromise : IPromise
+		{
+			return s_PromiseDataMap[promise.Id].State;
+		}
+
+		public static void SetState<TPromise>(TPromise promise, PromiseState state) where TPromise : IPromise
+		{
+			var data = s_PromiseDataMap[promise.Id];
+			data.State = state;
+			s_PromiseDataMap[promise.Id] = data;
+		}
+
+		public static bool IsDone<TPromise>(TPromise promise) where TPromise : IPromise
+		{
+			return GetState(promise) > PromiseState.InProgress;
 		}
 
 		public static object GetResult<TPromise>(TPromise promise) where TPromise : IPromise
@@ -125,26 +143,38 @@ namespace Promises
 
 		public static void Resolve<TPromise>(TPromise promise, object result) where TPromise : IPromise
 		{
+			Exception exception = null;
 			try
 			{
 				SetResult(promise, result);
 				var resultCallback = GetResultCallback(promise);
 				resultCallback(result);
 			}
-			catch (Exception e)
+			catch (Exception ex)
 			{
-				Throw(promise, e);
+				exception = ex;
+				Console.WriteLine(
+					$"An exception inside promises was silently taken care of. Exception callback was invoked. Exception: {ex}");
+				var exceptionCallback = GetExceptionCallback(promise);
+				exceptionCallback(ex);
 			}
 			finally
 			{
 				var finallyCallback = GetFinallyCallback(promise);
 				finallyCallback();
 			}
+
+			if (TryGetNextInChain(promise, out var next) && exception != null)
+			{
+				next.Reject(exception);
+			}
 		}
 
 		public static void Reject<TPromise>(TPromise promise, Exception exception = null) where TPromise : IPromise
 		{
-			Throw(promise, exception);
+			exception ??= new UnknownPromiseErrorException();
+			var exceptionCallback = GetExceptionCallback(promise);
+			exceptionCallback(exception);
 
 			var finallyCallback = GetFinallyCallback(promise);
 			finallyCallback();
@@ -153,13 +183,6 @@ namespace Promises
 			{
 				nextPromise.Reject(exception);
 			}
-		}
-
-		public static void Throw<TPromise>(TPromise promise, Exception exception) where TPromise : IPromise
-		{
-			exception ??= new UnknownPromiseErrorException();
-			var exceptionCallback = GetExceptionCallback(promise);
-			exceptionCallback(exception);
 		}
 
 		public static bool TryGetNextInChain<TPromise>(TPromise promise, out Promise next) where TPromise : IPromise

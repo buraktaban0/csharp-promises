@@ -27,7 +27,7 @@ namespace Promises
 				var generatedPromise = constructor();
 				Promise.Bind(generatedPromise, placeholder);
 			});
-			Promise.AddExceptionCallback(promise, (ex) => { placeholder.Reject(ex); });
+			// Promise.AddExceptionCallback(promise, (ex) => { placeholder.Reject(ex); });
 
 			return placeholder;
 		}
@@ -45,7 +45,7 @@ namespace Promises
 				var generatedPromise = constructor(result);
 				Promise.Bind(generatedPromise, placeholder);
 			});
-			Promise.AddExceptionCallback(promise, (ex) => { placeholder.Reject(ex); });
+			// Promise.AddExceptionCallback(promise, (ex) => { placeholder.Reject(ex); });
 
 			return placeholder;
 		}
@@ -64,7 +64,7 @@ namespace Promises
 				var generatedPromise = constructor();
 				Promise.Bind(generatedPromise, placeholder);
 			});
-			Promise.AddExceptionCallback(promise, (ex) => { placeholder.Reject(ex); });
+			// Promise.AddExceptionCallback(promise, (ex) => { placeholder.Reject(ex); });
 
 			return placeholder;
 		}
@@ -77,12 +77,13 @@ namespace Promises
 			                  {
 				                  Id = Promise.AllocateId(),
 			                  };
+			Promise.AddChain(promise, placeholder);
 			Promise<TResult>.AddResultCallback(promise, result =>
 			{
 				var generatedPromise = constructor(result);
 				Promise.Bind(generatedPromise, placeholder);
 			});
-			Promise.AddExceptionCallback(promise, (ex) => { placeholder.Reject(ex); });
+			// Promise.AddExceptionCallback(promise, (ex) => { placeholder.Reject(ex); });
 
 			return placeholder;
 		}

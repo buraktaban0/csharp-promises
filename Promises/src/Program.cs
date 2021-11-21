@@ -16,8 +16,9 @@ namespace Promises
 			       .Then(result =>
 			       {
 				       Console.WriteLine("asd " + result);
+				       // throw new ArgumentException("asd");
 			       })
-			       .Catch((ArgumentException exception) => { })
+			       .Catch((ArgumentException exception) => { Console.WriteLine($"Exception received: {exception}"); })
 			       .Finally(() => Console.WriteLine("Executing finally 1"))
 			       .Then(() => Console.WriteLine("Empty callback"))
 			       .Then(GetLongAsync)
