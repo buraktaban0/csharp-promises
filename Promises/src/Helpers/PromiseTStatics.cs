@@ -19,7 +19,7 @@ namespace Promises
 			return new Promise<T> { Id = promise.Id };
 		}
 
-		public static void AddResultCallback(Promise<T> promise, PromiseResultDelegate<T> callback)
+		public static void AddResultCallback<TPromise>(TPromise promise, PromiseResultDelegate<T> callback) where TPromise : IPromise<T>
 		{
 			Promise.AddResultCallback(promise, result =>
 			{

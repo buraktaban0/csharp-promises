@@ -14,5 +14,13 @@ namespace Promises
 		}
 
 		public object Current { get; }
+
+		public Promise<TConverted> Convert<TConverted>()
+		{
+			return new Promise<TConverted>
+			       {
+				       Id = Id
+			       };
+		}
 	}
 }

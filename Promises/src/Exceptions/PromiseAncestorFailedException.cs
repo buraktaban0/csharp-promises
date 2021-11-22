@@ -1,6 +1,6 @@
 using System;
 
-namespace Promises.Exceptions
+namespace Promises
 {
 	public class PromiseAncestorFailedException : Exception
 	{

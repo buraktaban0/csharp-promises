@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace Promises
@@ -23,7 +24,13 @@ namespace Promises
 			       .Then(() => Console.WriteLine("Empty callback"))
 			       .Then(GetLongAsync)
 			       .Then(result => Console.WriteLine("Long: " + result))
-			       .Finally(() => Console.WriteLine("Executing finally 2"));
+			       .Finally(() => Console.WriteLine("Executing finally 2"))
+			       .ThenAll(l => new IPromiseBase[] { GetLongAsync("Hiya"), GetStringAsync("ooo!") })
+			       .Then(result => { Console.WriteLine($"Results were: {string.Join(" / ", result)}"); })
+			       .Catch((exception) => { Console.WriteLine($"Exception received 2: {exception}"); })
+			       .Finally(() => Console.WriteLine("Executing finally 3"));
+			
+			promise.Resolve(null);
 
 			Task.Run(() =>
 			{
@@ -53,8 +60,8 @@ namespace Promises
 
 			Task.Run(() =>
 			{
-				Task.Delay(1000).Wait();
-				promise.Resolve(1234u);
+				Task.Delay(2000).Wait();
+				promise.Resolve(DateTime.Now.Ticks);
 			});
 
 			return promise;
