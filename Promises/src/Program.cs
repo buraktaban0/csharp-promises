@@ -30,7 +30,6 @@ namespace Promises
 			       .Catch((exception) => { Console.WriteLine($"Exception received 2: {exception}"); })
 			       .Finally(() => Console.WriteLine("Executing finally 3"));
 			
-			promise.Resolve(null);
 
 			Task.Run(() =>
 			{
